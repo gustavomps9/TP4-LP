@@ -9,3 +9,23 @@ public class TicTacToeJogo{
         currentPlayer = 'X';
     }
 
+    public boolean jogada(int row, int col) {
+        if (tabuleiro.jogada(row, col, currentJogador)) {
+            return true;
+        }
+        return false;
+    }
+
+    public char getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    public void printTabuleiro() {
+        tabuleiro.printTabuleiro();
+    }
+
+    public void resetJogo() {
+        tabuleiro.resetTabuleiro();
+        currentPlayer = 'X';
+    }
+}
