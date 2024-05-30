@@ -16,6 +16,18 @@ public class TicTacToeJogo{
         return false;
     }
 
+    public boolean checkWin() {
+        return tabuleiro.checkWin(currentPlayer);
+    }
+
+    public boolean isFull() {
+        return tabuleiro.isFull();
+    }
+
+    public void trocaJogador() {
+        currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
+    }
+
     public char getCurrentPlayer() {
         return currentPlayer;
     }
@@ -26,6 +38,6 @@ public class TicTacToeJogo{
 
     public void resetJogo() {
         tabuleiro.resetTabuleiro();
-        currentPlayer = 'X';
-    }
+        currentPlayer='X';
+}
 }

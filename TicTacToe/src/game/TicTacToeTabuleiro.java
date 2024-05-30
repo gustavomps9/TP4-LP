@@ -29,4 +29,44 @@ public class TicTacToeTabuleiro {
         return false;
     }
 
+    // Verifica se o jogador passado como parâmetro ganhou
+    public boolean checkWin(char jogador) {
+        // Verifica as linhas e colunas
+        for (int i = 0; i < SIZE; i++) {
+            if (tabuleiro[i][0] == jogador && tabuleiro[i][1] == jogador && tabuleiro[i][2] == jogador)
+                return true;
+            if (tabuleiro[0][i] == jogador && tabuleiro[1][i] == jogador && tabuleiro[2][i] == jogador)
+                return true;
+        }
+        if (tabuleiro[0][0] == jogador && tabuleiro[1][1] == jogador && tabuleiro[2][2] == jogador)
+            return true;
+        if (tabuleiro[0][2] == jogador && tabuleiro[1][1] == jogador && tabuleiro[2][0] == jogador)
+            return true;
+        return false;
+    }
 
+    // Verifica se o tabuleiro está cheio
+    public boolean isFull() {
+        for (int i = 0; i < tamanho; i++) {
+            for (int j = 0; j < tamanho; j++) {
+                if (tabuleiro[i][j] == ' ')
+                    // Return false se encontrar uma posição vazia
+                    return false;
+            }
+        }
+        // Return true se todas posições estiverem preenchidas
+        return true;
+    }
+
+    // Print do estado atual do tabuleira na consola
+    public void printTabuleiro() {
+        for (int i = 0; i < tamanho; i++) {
+            for (int j = 0; j < tamanho; j++) {
+                System.out.print(tabuleiro[i][j]);
+                if (j < tamanho - 1) System.out.print("|");
+            }
+            System.out.println();
+            if (i < tamanho - 1) System.out.println("-----");
+ }
+}
+}
