@@ -75,6 +75,26 @@ public class TicTacToeTabuleiro {
         System.out.println();
     }
 
+    // Retorna uma representação em forma de String do tabuleiro
+    public String getTabuleiroString() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < tamanho; i++) {
+            for (int j = 0; j < tamanho; j++) {
+                sb.append(tabuleiro[i][j]);
+                if (j < tamanho - 1) {
+                    sb.append(" | ");
+                }
+            }
+            if (i < tamanho - 1) {
+                sb.append("\n---------\n"); // Linha horizontal entre linhas
+            } else {
+                sb.append("\n");
+            }
+        }
+        return sb.toString();
+    }
+
+    // Verifica se o tabuleiro está cheio
     public boolean isFull() {
         for (int i = 0; i < tamanho; i++) {
             for (int j = 0; j < tamanho; j++) {
@@ -85,9 +105,4 @@ public class TicTacToeTabuleiro {
         }
         return true; // Tabuleiro está cheio
     }
-
-
-
 }
-
-
