@@ -10,7 +10,7 @@ public class TicTacToeJogo{
     }
 
     public boolean jogada(int row, int col) {
-        if (tabuleiro.jogada(row, col, currentJogador)) {
+        if (tabuleiro.jogada(row, col, currentPlayer)) {
             return true;
         }
         return false;
