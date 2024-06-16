@@ -1,150 +1,133 @@
 package src.server;
 
-import src.game.TicTacToeTabuleiro;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import src.game.TicTacToeJogo;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TicTacToeServer {
-    private static final int PORT = 1234; // Porta do servidor
-    private TicTacToeTabuleiro game; // Instância do tabuleiro do jogo
-    private List<ClientHandler> clients; // Lista de clientes conectados
-    private ClientHandler player1;  // Jogador 1
-    private ClientHandler player2;  // Jogador 2
-    private int currentPlayer;  // Jogador atual (0 ou 1)
-
+    private static final int PORT = 8080;
+    private TicTacToeJogo jogo;
+    private List<ClientHandler> clients;
 
     public TicTacToeServer() {
-        game = new TicTacToeTabuleiro(); // Inicializa o tabuleiro do jogo
-        clients = new ArrayList<>(); // Inicializa a lista de clientes
-        currentPlayer = 'X'; // Define o jogador inicial como 'X'
+        jogo = new TicTacToeJogo();
+        clients = new ArrayList<>();
     }
 
     public void start() throws IOException {
-        ServerSocket serverSocket = new ServerSocket(PORT); // Cria o socket do servidor
+        ServerSocket serverSocket = new ServerSocket(PORT);
         System.out.println("Servidor iniciado na porta " + PORT);
 
-        // Espera até que dois clientes se conectem
         while (clients.size() < 2) {
-            Socket clientSocket = serverSocket.accept(); // Aceita a conexão do cliente
+            Socket clientSocket = serverSocket.accept();
             ClientHandler clientHandler = new ClientHandler(clientSocket, clients.size() == 0 ? 'X' : 'O');
-            clients.add(clientHandler); // Adiciona o cliente à lista de clientes
-            clientHandler.start(); // Inicia a thread do cliente
+            clients.add(clientHandler);
+            clientHandler.start();
         }
 
-        // Inicia o jogo quando dois clientes estão conectados
         broadcast("Jogo iniciado. Jogador X começa.");
-        broadcast(game.getTabuleiroString()); // Envia o tabuleiro inicial para ambos os clientes
+        broadcast(jogo.getTabuleiroString());
     }
 
-    // Método para enviar mensagens a todos os clientes
     private void broadcast(String message) {
         for (ClientHandler client : clients) {
-            client.sendMessage(message); // Envia a mensagem para o cliente
-        }
-        if (message.contains("|")) { // Assuming the board string contains '|'
-            System.out.println(message); // Print the board on the server console
+            client.sendMessage(message);
         }
     }
 
-    // Classe interna para manipular as conexões dos clientes
     private class ClientHandler extends Thread {
         private Socket clientSocket;
         private BufferedReader in;
         private PrintWriter out;
         private char player;
 
-        public ClientHandler(Socket socket, char player) throws IOException {
+        public ClientHandler(Socket socket, char player) {
             this.clientSocket = socket;
             this.player = player;
-            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            out = new PrintWriter(clientSocket.getOutputStream(), true);
         }
 
         public void run() {
             try {
+                in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                out = new PrintWriter(clientSocket.getOutputStream(), true);
 
-
-                // Mensagem inicial para o jogador
                 out.println("Bem-vindo ao Jogo do Galo! Você é o jogador " + player);
 
-                // Loop para receber e processar as jogadas dos clientes
                 while (true) {
-                    if (currentPlayer == player) {
+                    if (jogo.getCurrentPlayer() == player) {
                         out.println("É a sua vez. Digite sua jogada no formato 'linha coluna':");
-                    }
 
-                    String input = in.readLine(); // Lê a entrada do cliente
-                    if (input == null) {
-                        break; // Encerra o loop se a entrada for nula
-                    }
+                        String input = in.readLine();
+                        if (input == null) {
+                            break;
+                        }
 
-                    String[] parts = input.split(" ");
-                    if (parts.length == 2) {
-                        try {
-                            int row = Integer.parseInt(parts[0]);
-                            int col = Integer.parseInt(parts[1]);
+                        String[] parts = input.split(" ");
+                        if (parts.length == 2) {
+                            try {
+                                int row = Integer.parseInt(parts[0]) - 1;
+                                int col = Integer.parseInt(parts[1]) - 1;
 
-                            // Verifica e faz a jogada
-                            if (game.jogada(row, col, player)) {
-                                broadcast("UPDATE " + row + " " + col + " " + player);
-                                game.printTabuleiro(); // Print do tabuleiro na consola
-                                broadcast(game.getTabuleiroString()); // Envia o tabuleiro atualizado para todos
+                                // Verifica se a jogada está dentro dos limites do tabuleiro
+                                if (row >= 0 && row < 3 && col >= 0 && col < 3) {
+                                    synchronized (jogo) {
+                                        if (jogo.jogada(row, col)) {
+                                            broadcast("UPDATE " + row + " " + col + " " + player);
+                                            broadcast(jogo.getTabuleiroString());
 
-                                // Verifica se o jogador atual venceu
-                                if (game.checkWin(player)) {
-                                    broadcast("Jogador " + player + " venceu!");
-                                    game.resetTabuleiro(); // Reseta o tabuleiro do jogo
-                                    broadcast("Novo jogo iniciado. Jogador X começa.");
-                                    currentPlayer = 'X'; // Reinicia o jogo com o jogador 'X'
-                                    broadcast(game.getTabuleiroString()); // Envia tabuleiro vazio para reiniciar
-                                } else if (game.isFull()) {
-                                    broadcast("Empate!"); // Verifica se houve empate
-                                    game.resetTabuleiro(); // Reseta o tabuleiro do jogo
-                                    broadcast("Novo jogo iniciado. Jogador X começa.");
-                                    currentPlayer = 'X'; // Reinicia o jogo com o jogador 'X'
-                                    broadcast(game.getTabuleiroString()); // Envia tabuleiro vazio para reiniciar
+                                            if (jogo.checkWin()) {
+                                                broadcast("Jogador " + player + " venceu!");
+                                                jogo.resetJogo();
+                                                broadcast("Novo jogo iniciado. Jogador X começa.");
+                                                broadcast(jogo.getTabuleiroString());
+                                            } else if (jogo.isFull()) {
+                                                broadcast("Empate!");
+                                                jogo.resetJogo();
+                                                broadcast("Novo jogo iniciado. Jogador X começa.");
+                                                broadcast(jogo.getTabuleiroString());
+                                            } else {
+                                                jogo.trocaJogador();
+                                            }
+                                        } else {
+                                            out.println("Movimento inválido. Tente novamente.");
+                                        }
+                                    }
                                 } else {
-                                    trocaJogador(); // Troca o jogador atual
+                                    out.println("Jogada fora dos limites do tabuleiro. Tente novamente.");
                                 }
-                            } else {
-                                out.println("Movimento inválido. Tente novamente.");
+                            } catch (NumberFormatException e) {
+                                out.println("Formato inválido. Use números para linha e coluna.");
                             }
-                        } catch (NumberFormatException e) {
+                        } else {
                             out.println("Formato inválido. Use números para linha e coluna.");
                         }
+                    } else {
+                        out.println("Aguarde a vez do jogador " + jogo.getCurrentPlayer() + ".");
+                        Thread.sleep(2000); // Aguarda 2 segundos antes de verificar novamente
                     }
                 }
-            } catch (IOException e) {
+            } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             } finally {
                 try {
-                    clientSocket.close(); // Fecha o socket do cliente
+                    clientSocket.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }
 
-        // Método para enviar mensagem ao cliente
         public void sendMessage(String message) {
             out.println(message);
-        }
-
-        // Método para trocar o jogador atual
-        private void trocaJogador() {
-            currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
         }
     }
 
     public static void main(String[] args) throws IOException {
-        TicTacToeServer server = new TicTacToeServer(); // Cria uma instância do servidor
-        server.start(); // Inicia o servidor
+        TicTacToeServer server = new TicTacToeServer();
+        server.start();
     }
 }

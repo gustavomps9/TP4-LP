@@ -9,7 +9,7 @@ import java.util.Scanner;
 
 public class TicTacToeClient {
     private static final String SERVER_ADDRESS = "localhost";
-    private static final int SERVER_PORT = 1234;
+    private static final int SERVER_PORT = 8080;
 
     public static void main(String[] args) {
         try (Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
@@ -17,30 +17,28 @@ public class TicTacToeClient {
              PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
              Scanner scanner = new Scanner(System.in)) {
 
-            // Recebe a mensagem inicial do servidor
             String response = in.readLine();
             System.out.println(response);
 
-            // Loop principal para receber e enviar jogadas
             while (true) {
                 response = in.readLine();
-                if (response.startsWith("É a sua vez")) {
+                if (response == null) {
+                    break;
+                }
+
+                if (response.startsWith("UPDATE")) {
+                    continue; // Ignore this line, the board state will follow
+                } else if (response.startsWith("É a sua vez") || response.startsWith("Movimento inválido") || response.startsWith("Formato inválido")) {
                     System.out.println(response);
                     String move = scanner.nextLine();
-                    out.println("MOVE " + move); // Envia a jogada para o servidor
-                } else if (response.startsWith("TABULEIRO")) {
-                    System.out.println(response.substring(10)); // Imprime o tabuleiro
+                    out.println(move);
                 } else {
                     System.out.println(response);
-                    if (response.contains("venceu") || response.contains("Empate")) {
-                        break; // Termina o loop se o jogo acabou
-                    }
                 }
             }
 
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 }
