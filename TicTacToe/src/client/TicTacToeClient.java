@@ -28,17 +28,13 @@ public class TicTacToeClient {
                     System.out.println(response);
                     String move = scanner.nextLine();
                     out.println("MOVE " + move); // Envia a jogada para o servidor
-                } else if (response.startsWith("UPDATE")) {
-                    String[] parts = response.split(" ");
-                    int row = Integer.parseInt(parts[1]);
-                    int col = Integer.parseInt(parts[2]);
-                    char player = parts[3].charAt(0);
-                    System.out.println("Jogada realizada por jogador " + player + " na posição (" + row + ", " + col + ")");
-                } else if (response.contains("|")) { // Assuming the board string contains '|'
-                    System.out.println(response); // Print the board
+                } else if (response.startsWith("TABULEIRO")) {
+                    System.out.println(response.substring(10)); // Imprime o tabuleiro
                 } else {
                     System.out.println(response);
-                    break; // Termina o loop se o jogo acabou
+                    if (response.contains("venceu") || response.contains("Empate")) {
+                        break; // Termina o loop se o jogo acabou
+                    }
                 }
             }
 

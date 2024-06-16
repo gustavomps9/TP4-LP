@@ -48,9 +48,10 @@ public class TicTacToeServer {
         for (ClientHandler client : clients) {
             client.sendMessage(message); // Envia a mensagem para o cliente
         }
-        System.out.println(game.getTabuleiroString()); // Imprime o tabuleiro na console do servidor
+        if (message.contains("|")) { // Assuming the board string contains '|'
+            System.out.println(message); // Print the board on the server console
+        }
     }
-
 
     // Classe interna para manipular as conexões dos clientes
     private class ClientHandler extends Thread {

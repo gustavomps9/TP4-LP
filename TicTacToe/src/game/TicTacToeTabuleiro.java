@@ -1,5 +1,8 @@
 package src.game;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TicTacToeTabuleiro {
     private char[][] tabuleiro;
     private static final int tamanho = 3;
@@ -7,9 +10,10 @@ public class TicTacToeTabuleiro {
     // Construtor que inicializa o tabuleiro
     public TicTacToeTabuleiro() {
         tabuleiro = new char[tamanho][tamanho];
+        jogadas = new ArrayList<>();
         resetTabuleiro();
     }
-
+    private List<String> jogadas;
     // Reset no tabuleiro, preenchendo todas as posições com espaços em branco
     public void resetTabuleiro() {
         for (int i = 0; i < tamanho; i++) {
@@ -23,10 +27,14 @@ public class TicTacToeTabuleiro {
     public boolean jogada(int row, int col, char jogador) {
         if (row >= 0 && row < tamanho && col >= 0 && col < tamanho && tabuleiro[row][col] == ' ') {
             tabuleiro[row][col] = jogador;
+            jogadas.add("Jogador " + jogador + " jogou na posição (" + row + ", " + col + ")");
             return true;
         }
-        // Return false se a jogada não for válida
+        //Return false se a jogada não for valida
         return false;
+    }
+    public List<String> getJogadas() {
+        return jogadas;
     }
 
     // Verifica se o jogador venceu
