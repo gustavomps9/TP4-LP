@@ -1,4 +1,4 @@
-package client;
+package src.client;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.util.Scanner;
 
 public class TicTacToeClient {
     private static final String SERVER_ADDRESS = "localhost";
-    private static final int SERVER_PORT = 80;
+    private static final int SERVER_PORT = 1234;
 
     public static void main(String[] args) {
         try (Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
@@ -34,6 +34,8 @@ public class TicTacToeClient {
                     int col = Integer.parseInt(parts[2]);
                     char player = parts[3].charAt(0);
                     System.out.println("Jogada realizada por jogador " + player + " na posição (" + row + ", " + col + ")");
+                } else if (response.contains("|")) { // Assuming the board string contains '|'
+                    System.out.println(response); // Print the board
                 } else {
                     System.out.println(response);
                     break; // Termina o loop se o jogo acabou
@@ -43,5 +45,6 @@ public class TicTacToeClient {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 }

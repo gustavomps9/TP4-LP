@@ -1,18 +1,24 @@
-package server;
+package src.server;
 
-import game.TicTacToeTabuleiro;
+import src.game.TicTacToeTabuleiro;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TicTacToeServer {
-    private static final int PORT = 8080; // Porta do servidor
+    private static final int PORT = 1234; // Porta do servidor
     private TicTacToeTabuleiro game; // Instância do tabuleiro do jogo
     private List<ClientHandler> clients; // Lista de clientes conectados
-    private char currentPlayer; // Jogador atual
+    private ClientHandler player1;  // Jogador 1
+    private ClientHandler player2;  // Jogador 2
+    private int currentPlayer;  // Jogador atual (0 ou 1)
+
 
     public TicTacToeServer() {
         game = new TicTacToeTabuleiro(); // Inicializa o tabuleiro do jogo
@@ -42,7 +48,9 @@ public class TicTacToeServer {
         for (ClientHandler client : clients) {
             client.sendMessage(message); // Envia a mensagem para o cliente
         }
+        System.out.println(game.getTabuleiroString()); // Imprime o tabuleiro na console do servidor
     }
+
 
     // Classe interna para manipular as conexões dos clientes
     private class ClientHandler extends Thread {
@@ -51,15 +59,16 @@ public class TicTacToeServer {
         private PrintWriter out;
         private char player;
 
-        public ClientHandler(Socket socket, char player) {
+        public ClientHandler(Socket socket, char player) throws IOException {
             this.clientSocket = socket;
             this.player = player;
+            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            out = new PrintWriter(clientSocket.getOutputStream(), true);
         }
 
         public void run() {
             try {
-                in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                out = new PrintWriter(clientSocket.getOutputStream(), true);
+
 
                 // Mensagem inicial para o jogador
                 out.println("Bem-vindo ao Jogo do Galo! Você é o jogador " + player);
@@ -84,6 +93,7 @@ public class TicTacToeServer {
                             // Verifica e faz a jogada
                             if (game.jogada(row, col, player)) {
                                 broadcast("UPDATE " + row + " " + col + " " + player);
+                                game.printTabuleiro(); // Print do tabuleiro na consola
                                 broadcast(game.getTabuleiroString()); // Envia o tabuleiro atualizado para todos
 
                                 // Verifica se o jogador atual venceu

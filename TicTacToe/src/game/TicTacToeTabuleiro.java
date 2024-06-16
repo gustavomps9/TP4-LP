@@ -1,4 +1,4 @@
-package game;
+package src.game;
 
 public class TicTacToeTabuleiro {
     private char[][] tabuleiro;
@@ -60,38 +60,51 @@ public class TicTacToeTabuleiro {
 
     // Print do tabuleiro na consola
     public void printTabuleiro() {
+        System.out.print("  0 1 2\n"); // Imprime os números das colunas
+
+        // Itera pelas linhas do tabuleiro
         for (int i = 0; i < tamanho; i++) {
+            System.out.print(i + " "); // Imprime o número da linha
+
+            // Itera pelas colunas do tabuleiro
             for (int j = 0; j < tamanho; j++) {
-                System.out.print(tabuleiro[i][j]);
+                System.out.print(tabuleiro[i][j]); // Imprime o conteúdo da célula (X, O ou vazio)
+
+                // Adiciona um separador entre as células, exceto na última coluna
                 if (j < tamanho - 1) {
-                    System.out.print(" | "); // Separador entre colunas
+                    System.out.print(" | ");
                 }
             }
-            System.out.println();
+
+            System.out.println(); // Move para a próxima linha após imprimir todas as colunas
+
+            // Adiciona uma linha horizontal entre as linhas, exceto na última linha
             if (i < tamanho - 1) {
-                System.out.println("---------"); // Linha horizontal entre linhas
+                System.out.println("  -------");
             }
         }
-        System.out.println();
+
+        System.out.println(); // Imprime uma linha em branco no final para separar visualmente
     }
 
     // Retorna uma representação em forma de String do tabuleiro
     public String getTabuleiroString() {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < tamanho; i++) {
-            for (int j = 0; j < tamanho; j++) {
-                sb.append(tabuleiro[i][j]);
-                if (j < tamanho - 1) {
-                    sb.append(" | ");
+        StringBuilder builder = new StringBuilder();
+        builder.append("  0 1 2\n"); // Imprime os números das colunas
+        for (int i = 0; i < 3; i++) {
+            builder.append(i + " "); // Imprime o número da linha
+            for (int j = 0; j < 3; j++) {
+                builder.append(tabuleiro[i][j]);
+                if (j < 2) {
+                    builder.append("|");
                 }
             }
-            if (i < tamanho - 1) {
-                sb.append("\n---------\n"); // Linha horizontal entre linhas
-            } else {
-                sb.append("\n");
+            builder.append("\n");
+            if (i < 2) {
+                builder.append("  -------\n");
             }
         }
-        return sb.toString();
+        return builder.toString();
     }
 
     // Verifica se o tabuleiro está cheio
