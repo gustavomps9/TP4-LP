@@ -86,7 +86,7 @@ public class TicTacToeServer {
                                             broadcastBoard();
 
                                             if (jogo.checkWin()) {
-                                                broadcast("Jogador " + player + " venceu!");
+                                                broadcast("Jogador " + getPlayerName() + " venceu!"); // Modificado para usar o nome do jogador
                                                 jogo.resetJogo();
                                                 broadcast("Novo jogo iniciado. Jogador X começa.");
                                                 broadcast(jogo.getTabuleiroString());
