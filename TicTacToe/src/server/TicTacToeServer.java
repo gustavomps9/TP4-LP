@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TicTacToeServer {
-    private static final int PORT = 8080;
+    private static final int PORT = 1234;
     private TicTacToeJogo jogo;
     private List<ClientHandler> clients;
 
@@ -44,6 +44,7 @@ public class TicTacToeServer {
         private BufferedReader in;
         private PrintWriter out;
         private char player;
+        private String playerName; // Novo campo para armazenar o nome do jogador
 
         public ClientHandler(Socket socket, char player) {
             this.clientSocket = socket;
@@ -56,6 +57,8 @@ public class TicTacToeServer {
                 out = new PrintWriter(clientSocket.getOutputStream(), true);
 
                 out.println("Bem-vindo ao Jogo do Galo! Você é o jogador " + player);
+                out.println("Por favor, insira seu nome:"); // Solicita o nome do jogador
+                playerName = in.readLine(); // Lê o nome do jogador
 
                 while (true) {
                     if (jogo.getCurrentPlayer() == player) {

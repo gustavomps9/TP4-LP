@@ -9,7 +9,7 @@ import java.util.Scanner;
 
 public class TicTacToeClient {
     private static final String SERVER_ADDRESS = "localhost";
-    private static final int SERVER_PORT = 8080;
+    private static final int SERVER_PORT = 1234;
 
     public static void main(String[] args) {
         try (Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
@@ -28,6 +28,10 @@ public class TicTacToeClient {
 
                 if (response.startsWith("UPDATE")) {
                     continue; // Ignore this line, the board state will follow
+                } else if (response.startsWith("Por favor, insira seu nome:")) {
+                    System.out.println(response);
+                    String name = scanner.nextLine();
+                    out.println(name);
                 } else if (response.startsWith("É a sua vez") || response.startsWith("Movimento inválido") || response.startsWith("Formato inválido")) {
                     System.out.println(response);
                     String move = scanner.nextLine();
