@@ -28,6 +28,9 @@ public class TicTacToeClient {
 
                 if (response.startsWith("UPDATE")) {
                     continue; // Ignore this line, the board state will follow
+                } else if (response.startsWith("Jogador X:")) {
+                    System.out.println(response); // Print player information
+                    continue;
                 } else if (response.startsWith("Por favor, insira seu nome:")) {
                     System.out.println(response);
                     String name = scanner.nextLine();

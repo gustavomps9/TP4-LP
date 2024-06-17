@@ -38,7 +38,11 @@ public class TicTacToeServer {
             client.sendMessage(message);
         }
     }
-
+    private void broadcastBoard() {
+        String board = jogo.getTabuleiroString();
+        String playerInfo = "Jogador X: " + clients.get(0).getPlayerName() + " vs Jogador O: " + clients.get(1).getPlayerName();
+        broadcast(playerInfo + "\n" + board);
+    }
     private class ClientHandler extends Thread {
         private Socket clientSocket;
         private BufferedReader in;
@@ -79,8 +83,7 @@ public class TicTacToeServer {
                                 if (row >= 0 && row < 3 && col >= 0 && col < 3) {
                                     synchronized (jogo) {
                                         if (jogo.jogada(row, col)) {
-                                            broadcast("UPDATE " + row + " " + col + " " + player);
-                                            broadcast(jogo.getTabuleiroString());
+                                            broadcastBoard();
 
                                             if (jogo.checkWin()) {
                                                 broadcast("Jogador " + player + " venceu!");
@@ -126,6 +129,10 @@ public class TicTacToeServer {
 
         public void sendMessage(String message) {
             out.println(message);
+        }
+
+        public String getPlayerName() {
+            return playerName;
         }
     }
 
